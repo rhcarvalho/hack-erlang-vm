@@ -20,7 +20,6 @@ func TestPutAtomTwice(t *testing.T) {
 	checkPut(t, at, "atom", 0)
 	checkPut(t, at, "atom", 0)
 	checkSize(t, at, 1)
-	checkOffset(t, at, "atom", 4)
 }
 
 func TestTableHasAtom(t *testing.T) {
@@ -30,34 +29,13 @@ func TestTableHasAtom(t *testing.T) {
 	checkHas(t, at, "atom", true)
 }
 
-func TestAtomOffset(t *testing.T) {
-	at := NewAtomTable()
-	at.Put("atom")
-	at.Put("second")
-	checkOffset(t, at, "atom", 4)
-	checkOffset(t, at, "second", 9)
-}
-
 func TestAtomAt(t *testing.T) {
 	at := NewAtomTable()
 	at.Put("atom")
 	at.Put("second")
-	checkAt(t, at, 4, "atom")
-	checkAt(t, at, 9, "second")
-	checkAt(t, at, 127, "")
-	checkAt(t, at, 7, "m\x06second")
-}
-
-func TestNthAtom(t *testing.T) {
-	at := NewAtomTable()
-	at.Put("atom")
-	at.Put("second")
-	checkNth(t, at, 0, "atom")
-	checkNth(t, at, 1, "second")
-	checkNth(t, at, 2, "")
-	checkNth(t, at, -1, "second")
-	checkNth(t, at, -2, "atom")
-	checkNth(t, at, -3, "")
+	checkAt(t, at, 0, "atom")
+	checkAt(t, at, 1, "second")
+	checkAt(t, at, 2, "")
 }
 
 func TestString(t *testing.T) {
@@ -96,21 +74,9 @@ func checkHas(t *testing.T, at *AtomTable, atom string, expectedHas bool) {
 	}
 }
 
-func checkOffset(t *testing.T, at *AtomTable, atom string, expectedOffset uint32) {
-	if offset := at.Offset(atom); offset != expectedOffset {
-		t.Errorf("AtomTable.Offset(%q) => %v, want %v", atom, offset, expectedOffset)
-	}
-}
-
-func checkAt(t *testing.T, at *AtomTable, offset uint32, expectedAtom string) {
-	if atom := at.At(offset); atom != expectedAtom {
-		t.Errorf("AtomTable.At(%v) => %q, want %q", offset, atom, expectedAtom)
-	}
-}
-
-func checkNth(t *testing.T, at *AtomTable, n int32, expectedAtom string) {
-	if atom := at.Nth(n); atom != expectedAtom {
-		t.Errorf("AtomTable.Nth(%v) => %q, want %q", n, atom, expectedAtom)
+func checkAt(t *testing.T, at *AtomTable, index uint32, expectedAtom string) {
+	if atom := at.At(index); atom != expectedAtom {
+		t.Errorf("AtomTable.At(%v) => %q, want %q", index, atom, expectedAtom)
 	}
 }
 

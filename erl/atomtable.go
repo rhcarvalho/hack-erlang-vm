@@ -102,43 +102,14 @@ func (at *AtomTable) Index(atom string) uint32 {
 	return at.h[atom]
 }
 
-// Offset returns the offset of the atom in the AtomTable.
+// At returns the atom of the AtomTable at the given index.
 //
-// Returns 0 when the AtomTable does not contain the atom.
-func (at *AtomTable) Offset(atom string) uint32 {
-	index, ok := at.h[atom]
-	if ok {
-		return at.a[index]
-	}
-	return 0
-}
-
-// At returns the atom at the given offset of the AtomTable.
-//
-// Returns garbage if offset is not valid.
-func (at *AtomTable) At(offset uint32) string {
-	m := uint32(len(at.t))
-	offset = offset % m
-	atomSize := uint32(at.t[offset])
-	return string(at.t[min(offset+1, m):min(offset+1+atomSize, m)])
-}
-
-func min(a, b uint32) uint32 {
-	if a < b {
-		return a
-	}
-	return b
-}
-
-// Nth returns the nth atom in the AtomTable.
-//
-// Returns the empty string when n is out of bounds.
-func (at *AtomTable) Nth(n int32) string {
-	if n < 0 {
-		n += int32(len(at.a))
-	}
-	if n >= int32(len(at.a)) || n < 0 {
+// Returns the empty string when index is out of bounds.
+func (at *AtomTable) At(index uint32) string {
+	if index < 0 || index >= at.Size() {
 		return ""
 	}
-	return at.At(at.a[n])
+	offset := at.a[index]
+	atomSize := uint32(at.t[offset])
+	return string(at.t[offset+1 : offset+1+atomSize])
 }
