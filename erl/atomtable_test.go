@@ -6,39 +6,39 @@ import (
 	"testing"
 )
 
-func TestPutFirstManyAtomsIncreaseSize(t *testing.T) {
+func TestAtomTablePutFirstManyAtomsIncreaseSize(t *testing.T) {
 	at := NewAtomTable()
 	checkSize(t, at, 0)
 	for i := 0; i < 1<<oneByte; i++ {
-		checkPut(t, at, "atom"+strconv.Itoa(i), uint32(i))
+		checkAtomTablePut(t, at, "atom"+strconv.Itoa(i), uint32(i))
 		checkSize(t, at, uint32(i+1))
 	}
 }
 
-func TestPutAtomTwice(t *testing.T) {
+func TestAtomTablePutAtomTwice(t *testing.T) {
 	at := NewAtomTable()
-	checkPut(t, at, "atom", 0)
-	checkPut(t, at, "atom", 0)
+	checkAtomTablePut(t, at, "atom", 0)
+	checkAtomTablePut(t, at, "atom", 0)
 	checkSize(t, at, 1)
 }
 
-func TestTableHasAtom(t *testing.T) {
+func TestAtomTableHasAtom(t *testing.T) {
 	at := NewAtomTable()
-	checkHas(t, at, "atom", false)
+	checkAtomTableHas(t, at, "atom", false)
 	at.Put("atom")
-	checkHas(t, at, "atom", true)
+	checkAtomTableHas(t, at, "atom", true)
 }
 
-func TestAtomAt(t *testing.T) {
+func TestAtomTableAtomAt(t *testing.T) {
 	at := NewAtomTable()
 	at.Put("atom")
 	at.Put("second")
-	checkAt(t, at, 0, "atom")
-	checkAt(t, at, 1, "second")
-	checkAt(t, at, 2, "")
+	checkAtomTableAt(t, at, 0, "atom")
+	checkAtomTableAt(t, at, 1, "second")
+	checkAtomTableAt(t, at, 2, "")
 }
 
-func TestString(t *testing.T) {
+func TestAtomTableString(t *testing.T) {
 	at := NewAtomTable()
 	for _, atom := range []string{"fac", "state", "erlang", "-", "*", "module_info", "get_module_info"} {
 		at.Put(atom)
@@ -56,31 +56,25 @@ func TestString(t *testing.T) {
 	}
 }
 
-func checkPut(t *testing.T, at *AtomTable, atom string, expectedIndex uint32) {
+func checkAtomTablePut(t *testing.T, at *AtomTable, atom string, expectedIndex uint32) {
 	if index := at.Put(atom); index != expectedIndex {
 		t.Errorf("AtomTable.Put(%q) => %v, want %v", atom, index, expectedIndex)
 	}
 }
 
-func checkSize(t *testing.T, at *AtomTable, expectedSize uint32) {
-	if size := at.Size(); size != expectedSize {
-		t.Errorf("AtomTable.Size() => %v, want %v", size, expectedSize)
-	}
-}
-
-func checkHas(t *testing.T, at *AtomTable, atom string, expectedHas bool) {
+func checkAtomTableHas(t *testing.T, at *AtomTable, atom string, expectedHas bool) {
 	if has := at.Has(atom); has != expectedHas {
 		t.Errorf("AtomTable.Has(%q) => %v, want %v", atom, has, expectedHas)
 	}
 }
 
-func checkAt(t *testing.T, at *AtomTable, index uint32, expectedAtom string) {
+func checkAtomTableAt(t *testing.T, at *AtomTable, index uint32, expectedAtom string) {
 	if atom := at.At(index); atom != expectedAtom {
 		t.Errorf("AtomTable.At(%v) => %q, want %q", index, atom, expectedAtom)
 	}
 }
 
-func BenchmarkSizeT(b *testing.B) {
+func BenchmarkAtomTableSizeT(b *testing.B) {
 	at := newBigAtomTable()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -88,7 +82,7 @@ func BenchmarkSizeT(b *testing.B) {
 	}
 }
 
-func BenchmarkSizeA(b *testing.B) {
+func BenchmarkAtomTableSizeA(b *testing.B) {
 	at := newBigAtomTable()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
@@ -96,7 +90,7 @@ func BenchmarkSizeA(b *testing.B) {
 	}
 }
 
-func BenchmarkSizeH(b *testing.B) {
+func BenchmarkAtomTableSizeH(b *testing.B) {
 	at := newBigAtomTable()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {

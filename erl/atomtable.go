@@ -1,12 +1,5 @@
 package erl
 
-import (
-	"bytes"
-	"fmt"
-)
-
-const oneByte = 8
-
 // An AtomTable represents an Erlang VM Atom Table.
 type AtomTable struct {
 	// t holds the atom table in binary format.
@@ -27,16 +20,7 @@ type AtomTable struct {
 
 // String returns the AtomTable as an Erlang Bit String.
 func (at *AtomTable) String() string {
-	var b bytes.Buffer
-	fmt.Fprint(&b, "<<")
-	for i, v := range at.t {
-		if i > 0 {
-			fmt.Fprint(&b, ",")
-		}
-		fmt.Fprint(&b, v)
-	}
-	fmt.Fprint(&b, ">>")
-	return b.String()
+	return bytesToBitString(at.t)
 }
 
 // NewAtomTable returns a properly initialized AtomTable.
