@@ -47,11 +47,11 @@ func NewAtomTable() *AtomTable {
 // Put adds an atom to the AtomTable and returns its index.
 //
 // Putting the same atom again returns the index of the original atom.
-func (at *AtomTable) Put(atom string) uint32 {
+func (at *AtomTable) Put(atom string) (index uint32) {
 	if at.Has(atom) {
 		return at.Index(atom)
 	}
-	index := at.incSize() - 1
+	index = at.incSize() - 1
 	offset := uint32(len(at.t))
 	at.h[atom] = index
 	at.a = append(at.a, offset)
@@ -98,14 +98,14 @@ func (at *AtomTable) Has(atom string) bool {
 // Index returns the index of the atom in the AtomTable.
 //
 // Returns 0 when the AtomTable does not contain the atom.
-func (at *AtomTable) Index(atom string) uint32 {
+func (at *AtomTable) Index(atom string) (index uint32) {
 	return at.h[atom]
 }
 
 // At returns the atom of the AtomTable at the given index.
 //
 // Returns the empty string when index is out of bounds.
-func (at *AtomTable) At(index uint32) string {
+func (at *AtomTable) At(index uint32) (atom string) {
 	if index < 0 || index >= at.Size() {
 		return ""
 	}
