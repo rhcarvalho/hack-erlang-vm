@@ -10,15 +10,15 @@ func TestPutFirstManyAtomsIncreaseSize(t *testing.T) {
 	at := NewAtomTable()
 	checkSize(t, at, 0)
 	for i := 0; i < 1<<oneByte; i++ {
-		at.Put("atom" + strconv.Itoa(i))
+		checkPut(t, at, "atom"+strconv.Itoa(i), uint32(i))
 		checkSize(t, at, uint32(i+1))
 	}
 }
 
 func TestPutAtomTwice(t *testing.T) {
 	at := NewAtomTable()
-	at.Put("atom")
-	at.Put("atom")
+	checkPut(t, at, "atom", 0)
+	checkPut(t, at, "atom", 0)
 	checkSize(t, at, 1)
 	checkOffset(t, at, "atom", 4)
 }
@@ -75,6 +75,12 @@ func TestString(t *testing.T) {
 	15,103,101,116,95,109,111,100,117,108,101,95,105,110,102,111>>`), "")
 	if str := at.String(); str != expected {
 		t.Errorf("AtomTable.String() => %q, want %q", str, expected)
+	}
+}
+
+func checkPut(t *testing.T, at *AtomTable, atom string, expectedIndex uint32) {
+	if index := at.Put(atom); index != expectedIndex {
+		t.Errorf("AtomTable.Put(%q) => %v, want %v", atom, index, expectedIndex)
 	}
 }
 

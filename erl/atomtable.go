@@ -33,18 +33,29 @@ func NewAtomTable() *AtomTable {
 	return &AtomTable{t: []byte{0, 0, 0, 0}, h: make(map[string]uint32)}
 }
 
-// Put adds an atom to the AtomTable.
+// Put adds an atom to the AtomTable and returns its index.
 //
-// Putting the same atom again has no effect.
-func (at *AtomTable) Put(atom string) {
+// Putting the same atom again returns the index of the original atom.
+func (at *AtomTable) Put(atom string) uint32 {
 	if at.Has(atom) {
-		return
+		return at.h[atom]
 	}
-	at.incSize()
+	index := at.incSize() - 1
 	offset := uint32(len(at.t))
-	at.h[atom] = offset
+	at.h[atom] = index
 	at.a = append(at.a, offset)
 	at.t = append(append(at.t, byte(len(atom))), []byte(atom)...)
+	return index
+}
+
+func (at *AtomTable) incSize() uint32 {
+	newSize := at.Size() + 1
+	copy(at.t[:4], []byte{
+		byte(newSize >> (3 * oneByte)),
+		byte(newSize >> (2 * oneByte)),
+		byte(newSize >> (1 * oneByte)),
+		byte(newSize >> (0 * oneByte))})
+	return newSize
 }
 
 // Size returns the number of atoms in the AtomTable.
@@ -55,8 +66,8 @@ func (at *AtomTable) Size() uint32 {
 func (at *AtomTable) sizeT() uint32 {
 	return uint32(at.t[0])<<(3*oneByte) +
 		uint32(at.t[1])<<(2*oneByte) +
-		uint32(at.t[2])<<oneByte +
-		uint32(at.t[3])
+		uint32(at.t[2])<<(1*oneByte) +
+		uint32(at.t[3])<<(0*oneByte)
 }
 
 func (at *AtomTable) sizeA() uint32 {
@@ -77,7 +88,11 @@ func (at *AtomTable) Has(atom string) bool {
 //
 // Returns 0 when the AtomTable does not contain the atom.
 func (at *AtomTable) Offset(atom string) uint32 {
-	return at.h[atom]
+	index, ok := at.h[atom]
+	if ok {
+		return at.a[index]
+	}
+	return 0
 }
 
 // At returns the atom at the given offset of the AtomTable.
@@ -108,13 +123,4 @@ func (at *AtomTable) Nth(n int32) string {
 		return ""
 	}
 	return at.At(at.a[n])
-}
-
-func (at *AtomTable) incSize() {
-	newSize := at.Size() + 1
-	copy(at.t[:4], []byte{
-		byte(newSize >> (3 * oneByte)),
-		byte(newSize >> (2 * oneByte)),
-		byte(newSize >> oneByte),
-		byte(newSize)})
 }
