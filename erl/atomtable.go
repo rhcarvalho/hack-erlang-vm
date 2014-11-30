@@ -9,8 +9,19 @@ const oneByte = 8
 
 // An AtomTable represents an Erlang VM Atom Table.
 type AtomTable struct {
+	// t holds the atom table in binary format.
+	// The first four bytes represent the number of atoms in the table.
+	// The next bytes are a sequence of 1-byte giving the size of an
+	// atom followed by the atom bytes.
+	//
+	// Empty table: <<0,0,0,0>>
+	// Put "atom":  <<0,0,0,1,4,97,116,111,109>>
 	t []byte
+
+	// a holds the offsets where atoms can be found in t.
 	a []uint32
+
+	// h maps atoms to indices in a.
 	h map[string]uint32
 }
 
