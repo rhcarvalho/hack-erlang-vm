@@ -6,19 +6,19 @@ import (
 	"testing"
 )
 
-func TestAddFirstManyAtomsIncreaseSize(t *testing.T) {
+func TestPutFirstManyAtomsIncreaseSize(t *testing.T) {
 	at := NewAtomTable()
 	checkSize(t, at, 0)
 	for i := 0; i < 1<<oneByte; i++ {
-		at.Add("atom" + strconv.Itoa(i))
+		at.Put("atom" + strconv.Itoa(i))
 		checkSize(t, at, uint32(i+1))
 	}
 }
 
-func TestAddAtomTwice(t *testing.T) {
+func TestPutAtomTwice(t *testing.T) {
 	at := NewAtomTable()
-	at.Add("atom")
-	at.Add("atom")
+	at.Put("atom")
+	at.Put("atom")
 	checkSize(t, at, 1)
 	checkOffset(t, at, "atom", 4)
 }
@@ -26,22 +26,22 @@ func TestAddAtomTwice(t *testing.T) {
 func TestTableHasAtom(t *testing.T) {
 	at := NewAtomTable()
 	checkHas(t, at, "atom", false)
-	at.Add("atom")
+	at.Put("atom")
 	checkHas(t, at, "atom", true)
 }
 
 func TestAtomOffset(t *testing.T) {
 	at := NewAtomTable()
-	at.Add("atom")
-	at.Add("second")
+	at.Put("atom")
+	at.Put("second")
 	checkOffset(t, at, "atom", 4)
 	checkOffset(t, at, "second", 9)
 }
 
 func TestAtomAt(t *testing.T) {
 	at := NewAtomTable()
-	at.Add("atom")
-	at.Add("second")
+	at.Put("atom")
+	at.Put("second")
 	checkAt(t, at, 4, "atom")
 	checkAt(t, at, 9, "second")
 	checkAt(t, at, 127, "")
@@ -50,8 +50,8 @@ func TestAtomAt(t *testing.T) {
 
 func TestNthAtom(t *testing.T) {
 	at := NewAtomTable()
-	at.Add("atom")
-	at.Add("second")
+	at.Put("atom")
+	at.Put("second")
 	checkNth(t, at, 0, "atom")
 	checkNth(t, at, 1, "second")
 	checkNth(t, at, 2, "")
@@ -63,7 +63,7 @@ func TestNthAtom(t *testing.T) {
 func TestString(t *testing.T) {
 	at := NewAtomTable()
 	for _, atom := range []string{"fac", "state", "erlang", "-", "*", "module_info", "get_module_info"} {
-		at.Add(atom)
+		at.Put(atom)
 	}
 	expected := strings.Join(strings.Fields(`<<0,0,0,7,
 	3,102,97,99,
@@ -135,7 +135,7 @@ func BenchmarkSizeH(b *testing.B) {
 func newBigAtomTable() *AtomTable {
 	at := NewAtomTable()
 	for i := 0; i < 1<<(2*oneByte); i++ {
-		at.Add("atom" + strconv.Itoa(i))
+		at.Put("atom" + strconv.Itoa(i))
 	}
 	return at
 }

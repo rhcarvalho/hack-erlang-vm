@@ -33,10 +33,10 @@ func NewAtomTable() *AtomTable {
 	return &AtomTable{t: []byte{0, 0, 0, 0}, h: make(map[string]uint32)}
 }
 
-// Add adds an atom to the AtomTable.
+// Put adds an atom to the AtomTable.
 //
-// Adding the same atom again has no effect.
-func (at *AtomTable) Add(atom string) {
+// Putting the same atom again has no effect.
+func (at *AtomTable) Put(atom string) {
 	if at.Has(atom) {
 		return
 	}
